@@ -1,53 +1,71 @@
 #include "vector_algos.hpp"
 #include <iostream>
 #include <string>
-#include <iterator>
 
-using iterator = std::vector<int>::iterator;  // This is like a typedef, wherever we see iterator we will get what is on the right (How namespaces work I think)
+using iterator = std::vector<int>::iterator;
 
-// Function that reads integer input from the user until they press Ctrl+Z. Returns a vector with the ints
-std::vector<int> read_int_vector()
+// Don't repeat default value here as it is known from the header
+std::vector<int> read_int_vector(std::istream& stream) // Don'
 {
 	int x = 0;
 	std::vector<int> input;
 
-	std::cout << "Enter as many numbers as you like.\n";
 	while (true)
 	{
-		while (std::cin >> x)
+		while (stream >> x)
 			input.push_back(x);
 
-		if (std::cin.eof())
+		if (stream.eof())
 			break;
 
 		std::string s;
-		std::cin.clear();
-		std::getline(std::cin, s);
+		stream.clear();
+		std::getline(stream, s);
 		std::cout << "Warning: Ignoring " << s << "\n";
 	}
 
 	return input;
 }
 
+int sum(std::vector<int> const& v)
+{
+	int total = 0;
+	
+	for (auto e : v)
+	{
+		total += e;
+	}
+	return total;
+}
+
+std::vector<int> filter_greater_than(std::vector<int> const& v, int x)
+{
+	std::vector<int> result;
+
+	for (auto e : v)
+	{
+		if (e > x)
+		{
+			result.push_back(e);
+		}
+	}
+	return result;
+}
+
+// Given a range it will rearrange the first element and return the partition of that elements final place
+iterator partition(iterator begin, iterator end);
+// Function that performs most of the sort work
+void sort_impl(iterator begin, iterator end);
+
 // Function that sorts a given vector using QuickSort!
 std::vector<int> sort(std::vector<int> v)
-{
-	// Given a range it will rearrange the first element and return the partition of that elements final place
-	iterator partition(iterator begin, iterator end);
-	
-	// Function that performs most of the sort work
-	void sort_impl(iterator begin, iterator end);
-
+{	
 	sort_impl(v.begin(), v.end());
-
 	return v;
 }
 
 void sort_impl(iterator begin, iterator end)
 {
-	// Need to redeclare partiton as it was declared in the scope of sort
-	iterator partition(iterator begin, iterator end);
-
 	// First check if range is empty or only 1 (end and begin are just like indexes of an element, even though end doesn't correspond to an element, but a sort of imaginary element)
 	if (end - begin <= 1)
 		return;
@@ -79,9 +97,9 @@ iterator partition(iterator begin, iterator end)
 
 
 // Function that checks if given int is inside given vector
-bool binary_search(std::vector<int> v, int x)
+std::vector<int>::const_iterator binary_search(std::vector<int> const& v, int x)
 {
-	iterator bottom = v.begin(), top = v.end();
+	auto bottom = v.begin(), top = v.end();
 
 	while (bottom != top)
 	{
@@ -92,9 +110,9 @@ bool binary_search(std::vector<int> v, int x)
 		else if (x > *mid)
 			bottom = ++mid;   // If you don't increment mid here then we get stuck in a forever loop
 		else
-			return true;
+			return mid;
 	}
 
-	return false;
+	return v.end();
 }
 
