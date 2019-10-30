@@ -1,143 +1,49 @@
 #include <iostream>
-#include <string>
+#include <algorithm>
 #include "vector_algos.hpp"
 
-void reference_practice()
+bool custom_comparison(int x, int y)
 {
-	int x = 5;   // Basic int variable
-	int& y = x;  // y is a reference and is bound to x (an alias)
-
-	std::cout << "int x = 5;\n";
-	std::cout << "int y& = x;\n";
-	std::cout << "> x == " << x << "\n";
-	std::cout << "> y == " << y << "\n";
-
-	y = 2;   // Here both x and y should become 2
-
-	std::cout << "\ny = 2;\n";
-	std::cout << "> x == " << x << std::endl;
-	std::cout << "> y == " << y << std::endl;
-
-	x = 3;   // Now both x and y should become 3
-
-	std::cout << "\nx = 3;\n";
-	std::cout << "> x == " << x << std::endl;
-	std::cout << "> y == " << y << std::endl;
-
-	// Auto assumes your variable shouldn't be a reference unless you explicitly tell it to be
-	auto z1 = y;
-	auto& z2 = y;
-
-	x = 8;
-
-	std::cout << "\nauto z1 = y;\n";
-	std::cout << "auto& z2 = y;\n";
-	std::cout << "x = 8;\n";
-	std::cout << ">x == " << x << std::endl;
-	std::cout << ">y == " << y << std::endl;
-	std::cout << ">z1 == " << z1 << std::endl;
-	std::cout << ">z2 == " << z2 << std::endl;
-
-	// We can declare functions inside other functions but cannot define them. We can define functions inside classes though
-
-	void takes_a_reference(int& i);
-	std::cout << std::endl;
-
-	std::cout << "> x == " << x << std::endl;
-	std::cout << "takes_a_reference(x);\n";
-	takes_a_reference(x);
-	std::cout << "> x == " << x << std::endl;
-
-	const int& c = x;
-	std::cout << std::endl;
-	std::cout << "const int& c = x;\n";
-
-	// We can't change x via c, but we can change c via x
-	std::cout << ">c == " << c << std::endl;
-	x = 5;
-	std::cout << "\nx = 5;\n";
-	std::cout << "> c == " << c << std::endl;
-
-	void takes_a_reference_to_const(const int& i);
-
-	std::cout << std::endl;
-	std::cout << "> x == " << x << std::endl;
-	std::cout << "takes_a_reference_to_const(x);\n";
-	takes_a_reference_to_const(x);
-	std::cout << "> x == " << x << std::endl;
-
-	std::cout << std::endl;
-	void print(const std::string & str);
-	std::cout << "print(\"I'm a string literal but can be converted to a string!\");\n"; // A "string literal" is not a string  but can be converted
-	print("I'm a string literal but can be converted to a string!");
-
-	// The following is not intended?
-	std::cout << std::endl;
-	std::cout << "const double& d = x;\n";
-	const double& d = x;  // x is an int
-	std::cout << "> x == " << x << std::endl;
-	std::cout << "> d == " << d << std::endl;
-	x = 15;
-	std::cout << "x = 15;\n";
-	std::cout << "> x == " << x << std::endl;
-	std::cout << "> d == " << d << std::endl;  // d does not reference to x as x is an int. Instead d references to a temporary double
-
-}
-
-void takes_a_reference(int& i)
-{
-	std::cout << "> i == " << i << "\n";
-	i = 7;
-	std::cout << "i = 7;\n";
-}
-
-void takes_a_reference_to_const(const int& i)
-{
-	std::cout << "i == " << i << std::endl;
-	std::cout << "Cannot change i since it is const. Therefore cannot change the value!\n";
-}
-
-void print(std::string const& str)
-{
-	std::cout << str << std::endl;
+	return x * x < y * y;
 }
 
 int main()
 {
-	reference_practice();
-	std::cout << std::endl;
+	std::cout << "Enter at least one number:\n";
+	auto v = read_int_vector();
 
-	auto v = sort(read_int_vector());
-
-	std::cout << "You entered: ";
-	for (auto e : v)
+	if (v.empty())
 	{
-		std::cout << " " << e; 
+		std::cout << "Must enter at least one number!\n";
+		return -1;
 	}
-	std::cout << std::endl;
+	//std::max_element returns iterator to the maximum element between two iterators. To get the value at the iterator we dereference with * operator
+	std::cout << "Maximum element: " << *std::max_element(v.begin(), v.end()) << std::endl; 
 
-	for (int i = 0; i < 50; i += 5)
-	{
-		auto it = binary_search(v, i);
-		if (it == v.end())
-		{
-			std::cout << i << " was not amongst the numbers you entered.\n";
-		}
-		else
-		{
-			std::cout << "You entered " << (it - v.begin()) << " numbers less than " << i << std::endl;
-		}
-	}
+	// std::min_element and std::max_element can take a custom comparison function. This even allows us to change the comparison min does allowing us to change it to max for example
+	std::cout << "Minimum element (normal): " << *std::min_element(v.begin(), v.end()) << std::endl;
+	std::cout << "Minimum element (custom comparison): " << *std::min_element(v.begin(), v.end(), custom_comparison) << std::endl;
 
-	std::cout << "Average: " << average(v) << std::endl;
 	std::cout << "Sum: " << sum(v) << std::endl;
+	std::cout << "Average: " << average(v) << std::endl;
 
-	std::cout << "Elements greater than 5:";
-	for (auto e : filter_greater_than(v, 5))
+	// Need to write this function which checks if any negative values are present in list
+	if (all_positive(v))
 	{
-		std::cout << " " << e;
+		std::cout << "All numbers you entered are positive!\n";
 	}
+	else
+	{
+		std::cout << "You entered at least one negative number!\n";
+	}
+
+	//Part of the algorithm's library. Sorts between the iterators. This allows for sorting of partial lists as well
+	std::sort(v.begin(), v.end());
+	
+	std::cout << "Your input, sorted: ";
+	display_range(v.begin(), v.end());
 	std::cout << std::endl;
 
+	std::sort(v.begin(), v.end(), custom_comparison);
 	return 0;
 }

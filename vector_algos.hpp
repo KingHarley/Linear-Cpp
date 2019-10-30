@@ -1,7 +1,7 @@
 
 // Check whether this header has been included already
-#ifndef CHAPTER_10_VECTOR_ALGOS_HPP
-#define CHAPTER_10_VECTOR_ALGOS_HPP    //Define the macro prevent inclusion of the header a second time.
+#ifndef CHAPTER_11_VECTOR_ALGOS_HPP
+#define CHAPTER_11_VECTOR_ALGOS_HPP    //Define the macro prevent inclusion of the header a second time.
 
 #include <vector>
 #include <iostream>
@@ -26,10 +26,7 @@ inline int average(std::vector<int> const& v)
 	return sum(v) / int(v.size());
 }
 
-// Function that sorts a vector
-std::vector<int> sort(std::vector<int> v);
-
-// Function that checks if an int is in a vector
-std::vector<int>::const_iterator binary_search(std::vector<int> const& v, int x);
+bool all_positive(std::vector<int> const& v);
+void display_range(std::vector<int>::const_iterator begin, std::vector<int>::const_iterator end);
 
 #endif
